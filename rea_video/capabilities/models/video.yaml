@@ -12,10 +12,11 @@ models:
     access: [app, api-aggregator]
     primitives: [video.t2v, video.i2v_first_frame, video.i2v_first_last, video.multi_reference, video.reference_video, video.reference_audio, video.multi_shot, video.extend, video.edit_v2v, video.camera_control, video.native_audio]
     limits:
-      duration_s: {max: 30}
+      duration_s: {min: 4, max: 30}
       resolutions: [480p, 720p, 1080p, 4K]
       refs: {image: 30, video: 10, audio: 10}
-      # 首帧 / 首尾帧 和 参考图 / 参考视频 / 参考音频 不能放在同一个请求里（多家接口文档一致；即梦 App 的「全能参考」可用 @图片 作为首帧）
+      ref_video_s: {min: 2, max: 30}   # 单段 2–30 秒，一次请求里的参考视频合计也不超过 30 秒
+      # 首帧 / 首尾帧 和 参考图 / 参考视频 / 参考音频 不能放在同一个请求里（Kie 与多家接口文档一致）
       exclusive_inputs: [[video.i2v_first_frame, video.i2v_first_last], [video.multi_reference, video.reference_video, video.reference_audio]]
     audio: {native: true}
     planning: {no_real_faces: true, api_params: {omni_reference_task_type: reference}}
@@ -26,17 +27,20 @@ models:
       - 国内电商复刻产品（OiiOii、Hypit）的主力模型
     weaknesses:
       - 官方承认复杂动作的物理合理性、多主体互动的稳定性仍有不足
-      - 官方未公布最大分辨率；Hypit 的 HypiHub 通道提供 480p/720p/1080p
+      - 参考视频只收 480p / 720p：单段 2–30 秒、合计不超过 30 秒、200 MB 以内、24–60 fps，宽高比 0.4–2.5，总像素 409600–927408（约 720p）。mp4 / mov / mkv。和首尾帧不能同传
     cost:
-      note: 实测参考：OiiOii 复刻 50 秒电商视频约 40 元（480p 生成后超分到 1080p）
+      usd_per_s: 0.315
+      note: "Kie 2026-11-25：无参考视频时 720p 0.315 美元/秒（480p 0.14，1080p 0.79，4K 1.255）。有参考视频时改用较低单价，乘（参考视频总秒数 + 输出秒数），720p 为 0.19 美元/秒（480p 0.085，1080p 0.475，4K 0.775）。参考图和参考音频不计秒。失败任务不扣费。"
     license: {commercial: true, note: 以平台条款为准}
     sources:
+      - https://docs.kie.ai/market/bytedance/seedance-2-5
+      - https://kie.ai/seedance-2-5
       - https://docs.volcengine.com/docs/82379/1520757
       - https://seed.bytedance.com/en/blog/one-take-creation-flexible-referencing-introducing-seedance-2-5
       - https://github.com/hypit-ai/hypit/blob/main/packages/provider-hypihub/README.md
       - https://docs.byteplus.com/docs/en/modelark/seedance-2-5.md
       - https://apiframe.ai/docs/videos/seedance/seedance-2-5
-    verified: {date: 2026-11-11, basis: vendor}
+    verified: {date: 2026-11-25, basis: vendor}
     confidence: high
 
   - id: seedance-2.5-flash

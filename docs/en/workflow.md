@@ -122,9 +122,16 @@ rea-video models seedance-2.5    # prompt format and key-frame needs for one mod
 rea-video plan out/ref
 ```
 
-If no model is set, `plan` uses your `rea-video prefs engine <id>` value, then `minimax-h3`. Draft prompts are in the report. Write the final ones to `out/ref/remake/prompts.json` as `{"G1": "..."}` and run `plan` again until its checks pass.
+If no model is set, `plan` uses your `rea-video prefs engine <id>` value. With neither a named model nor a saved engine, both `GEMINI_API_KEY` and `KIE_API_KEY` select Seedance 2.5 (stills: GPT Image 2 on Kie). Otherwise the plan stays on `minimax-h3`. Draft prompts are in the report. Write the final ones to `out/ref/remake/prompts.json` as `{"G1": "..."}` and run `plan` again until its checks pass.
 
-To generate and assemble with Capsule Cinema:
+To generate those Seedance shots on your own keys:
+
+```bash
+rea-video generate out/ref --dry-run    # provider, lengths, and a dollar estimate; nothing is billed
+rea-video generate out/ref --yes        # Kie when KIE_API_KEY is set; Zurelay only if that key is missing
+```
+
+Clips land in `out/ref/remake/generate/`. A unit that covers several shots is one file. Other models still go through Capsule Cinema:
 
 ```bash
 rea-video prefs capsule_root /path/to/capsule-cinema

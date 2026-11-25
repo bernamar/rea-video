@@ -53,7 +53,7 @@ pip install "rea-video[ocr,asr] @ git+https://github.com/JuneYaooo/rea-video"   
 
 两种配置：
 
-- Gemini：设置 `GEMINI_API_KEY`（模型用 `REA_GEMINI_MODEL` 改），走 Gemini 官方接口，连声音一起看视频片段；视频会上传到 Google，用完即删
+- Gemini：设置 `GEMINI_API_KEY`（默认模型 `gemini-3.1-pro-preview`，用 `REA_GEMINI_MODEL` 改），走 Gemini 官方接口，连声音一起看视频片段；视频会上传到 Google，用完即删
 - 其他多模态模型：设置 `REA_VLM_BASE_URL` / `REA_VLM_API_KEY` / `REA_VLM_MODEL`（可写多个模型、逗号分隔，前一个失败自动换下一个）。设置了这一组时优先用它
 
 用 `--env-file <某个 .env>` 读取配置。**不要把密钥写进对话、仓库或报告，也不要打开 .env 看内容。**

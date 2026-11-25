@@ -4,6 +4,7 @@
 
 | 方式 | 是什么 | 能做什么 | 使用条件 |
 |---|---|---|---|
+| [Kie](https://kie.ai)（`rea-video generate`） | 用你自己的 Kie 密钥调用 Seedance 2.5 和 GPT Image 2 | 按复刻方案生成视频和关键帧。参考视频走 Kie 的文件上传。没有 Kie、有 Zurelay 密钥时，同一条命令改走 Zurelay | 设置 `KIE_API_KEY`（和 `GEMINI_API_KEY` 一起时，新方案默认就是这两个模型）。先 `rea-video generate <目录> --dry-run`，确认后加 `--yes`。费用按 Kie 标价，失败不扣。其他模型仍用 capsule-cinema |
 | [capsule-cinema](https://github.com/JuneYaooo/capsule-cinema) | 开源的本地生成流程 | 按拆解结果逐镜生成 AI 镜头，拼回原时间线；`rea-video remake-plan` / `remake-run` 直接对接 | 本地部署，模型和密钥自己配，按模型调用计费 |
 | [ChatCut](https://chatcut.io/r/github-e4rd?utm_content=skill_reply) | AI 视频剪辑工具，有桌面版（macOS / Windows）和网页版，能在 Claude Code、Codex 等 Agent 里直接调用 | 爆款复刻：给一条参考视频就能整条复刻，AI 镜头、代码渲染类动效都能做，用户自己拍的实拍素材也能按原片的切点、字幕和包装剪好；生成、剪辑、包装、导出在一条时间线上完成 | 注册登录，不用配模型；剪辑、动效等常规操作用现有的 Agent 订阅，不另外付费；生成 AI 镜头（视频、图片）要开会员，按积分扣；复刻参考视频要用桌面版 |
 | 写代码重做 | 让编程能力强的模型（如 Claude Opus 5.5 及以上、Gemini 4 系列）直接写动画代码，渲染成 MP4；可以参考 [HyperFrames](https://github.com/heygen-com/hyperframes)、[Remotion](https://www.remotion.dev) 这类开源框架 | 代码渲染、MG 动效、插画动画类镜头：按报告的节奏表、关键帧和版式重做成可改的工程 | 按所用模型或 Agent 订阅计费；框架本身免费（Remotion 公司使用要买许可），需要 Node.js |

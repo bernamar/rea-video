@@ -60,6 +60,7 @@ models:
       - 2.5 是否还认 2.0 的四种声音符号，各来源说法不一
       - 最多能写几个镜头没有说明
     sources:
+      - https://docs.kie.ai/market/bytedance/seedance-2-5
       - https://ark.volcengine.com/region:cn-beijing/docs/seedance-2-5-prompt-guide
       - https://docs.volcengine.com/docs/82379/2607689
       - https://docs.volcengine.com/docs/ark/seedance-2-5?lang=zh
@@ -885,6 +886,24 @@ models:
       - https://blakecrosley.com/en/guides/midjourney
 
   # -------------------------------------------------------------- 图像模型（出首帧 / 关键帧）
+  gpt-image-2:
+    basis: vendor
+    structure: >-
+      场景 → 主体 → 关键细节 → 约束。分辨率和画幅用 API 参数设（aspect_ratio、resolution），不写进提示词
+    language: 英文为主；要出现在画面里的文字放引号里
+    references: >-
+      图生图按顺序传 input_urls，提示词里写每张图管什么（Image 1 是构图，Image 2 是要换上的主体）。只改一处时写明其余保持不变
+    negatives: 没有负面字段，直接写 "no watermark" "no extra text"
+    frames: >-
+      Kie 画幅：1:1、3:2、2:3、4:3、3:4、5:4、4:5、16:9、9:16、2:1、1:2、3:1、1:3、21:9、9:21，或 auto。1K / 2K / 4K。2K 不要用 5:4、4:5、3:1、1:3、9:21；4K 不要用 3:1、1:3、9:21
+    pitfalls:
+      - 一组关键帧先出一张定妆，后面每张都带上它，并写不要重新设计人物
+      - 本地文件要先上传成 Kie 的 https 地址，任务读不到本机路径
+    sources:
+      - https://docs.kie.ai/market/gpt/gpt-image-2-text-to-image
+      - https://docs.kie.ai/market/gpt/gpt-image-2-image-to-image
+      - https://kie.ai/gpt-image-2
+
   gpt-image-2.5:
     basis: vendor
     structure: >-

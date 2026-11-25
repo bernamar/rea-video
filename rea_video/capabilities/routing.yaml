@@ -114,7 +114,7 @@ rules:
     layer: base
     when: [physical_text_zh]
     route: [image.text_render, video.i2v_first_frame]
-    prefer: [gpt-image-2.5, gpt-image-2.6, qwen-image-3.0-pro, seedream-5.5, seedream-5.0, seedance-2.5, kling-3.0]
+    prefer: [gpt-image-2.5, gpt-image-2, gpt-image-2.6, qwen-image-3.0-pro, seedream-5.5, seedream-5.0, seedance-2.5, kling-3.0]
     verify: [text_render_accuracy, ocr_text_match]
     guard: 文字需要长时间清晰稳定、或镜头运动大时，改走 R01 代码叠加（运动中视频模型会扭曲文字）
 
@@ -122,7 +122,7 @@ rules:
     layer: base
     when: [product_hero]
     route: [image.edit_multi_ref, video.i2v_first_frame, video.i2v_first_last]
-    prefer: [gpt-image-2.5, gpt-image-2.6, nano-banana-2.1, seedream-5.5, seedream-5.0, seedance-2.5, kling-3.0, veo-3.1]
+    prefer: [gpt-image-2.5, gpt-image-2, gpt-image-2.6, nano-banana-2.1, seedream-5.5, seedream-5.0, seedance-2.5, kling-3.0, veo-3.1]
     verify: [identity_consistency, perceptual_similarity]
     why: 先用商品图合成首帧并确认，锁定外观后再生成运动
 
@@ -189,7 +189,7 @@ rules:
     layer: base
     when: [still_image_motion]
     route: [image.edit_multi_ref, render.compose]
-    prefer: [gpt-image-2.5, seedream-5.0, ffmpeg]
+    prefer: [gpt-image-2.5, gpt-image-2, seedream-5.0, ffmpeg]
     verify: [camera_path_error, perceptual_similarity]
     why: 拆解阶段已测出缩放/平移曲线，用一张图 + 本地 ffmpeg 就能精确复刻运动，不需要视频模型
 
@@ -197,7 +197,7 @@ rules:
     layer: base
     when: [static_hold]
     route: [image.edit_multi_ref, render.compose]
-    prefer: [gpt-image-2.5, seedream-5.0, ffmpeg]
+    prefer: [gpt-image-2.5, gpt-image-2, seedream-5.0, ffmpeg]
     verify: [perceptual_similarity]
 
   - id: R19-2d-animation

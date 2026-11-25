@@ -1,7 +1,7 @@
 """Image / video readers: Gemini through its own API (gemini.py), or a multimodal model's OpenAI-compatible endpoint.
 
 Config:
-  GEMINI_API_KEY (or GOOGLE_API_KEY), model REA_GEMINI_MODEL
+  GEMINI_API_KEY (or GOOGLE_API_KEY), model REA_GEMINI_MODEL (default gemini-3.1-pro-preview)
   REA_VLM_BASE_URL / REA_VLM_API_KEY / REA_VLM_MODEL   (a model's own endpoint; used when set)
 REA_VLM_MODEL may be a comma-separated fallback list.
 REA_VLM_MEDIA = both | video | frames  (default both: a short clip as data:video/mp4 plus keyframes)

@@ -5,23 +5,27 @@
 models:
   # ---------- VLM ----------
   - id: gemini-3.1-pro
-    name: Gemini 3.1 Pro
+    name: Gemini 3.1 Pro Preview
     vendor: Google
     category: analysis
-    status: ga
+    status: preview
     access: [api, app]
     primitives: [analyze.video_understanding]
     limits:
       duration_s: {max: 10800}
     strengths:
-      - 视频理解综合第一；最长 3 小时；音画联合理解
+      - 视频理解综合第一；最长约 3 小时；音画联合理解
+      - 设置 GEMINI_API_KEY 且没有 REA_VLM_* 时，拉片默认用这个模型
     weaknesses:
-      - 闭源；时间戳精度未公开，需要用确定性工具校准
+      - 预览版，接口名是 gemini-3.1-pro-preview；闭源；时间戳精度未公开，需要用确定性工具校准
     license: {commercial: true}
     sources:
+      - https://ai.google.dev/gemini-api/docs/models
+      - https://ai.google.dev/gemini-api/docs/pricing
       - https://usefulai.com/models/video-understanding
-    verified: {date: 2026-10-29, basis: third-party}
+    verified: {date: 2026-11-25, basis: vendor}
     confidence: medium
+    notes: API 模型 id gemini-3.1-pro-preview。可用 REA_GEMINI_MODEL 改成别的 Gemini 模型。标准档大约 2 美元/百万输入 token、12 美元/百万输出 token；看一条 30 秒片子大约 0.07 美元。
 
   - id: gemini-3.5-flash
     name: Gemini 3.5 Flash
