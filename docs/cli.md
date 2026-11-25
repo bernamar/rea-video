@@ -35,7 +35,7 @@ Claude Code 也可以按插件装 skill（CLI 仍需 `pip install`，skill 第�
 rea-video decompose ref.mp4 -o out/ref
 
 # 2. 加 VLM（建议，不强制）：让多模态大模型看画面，实拍/AI/3D 判断更准
-#    直接用 Gemini（模型用 REA_GEMINI_MODEL 改），连声音一起看片段
+#    直接用 Gemini。设置了 GEMINI_API_KEY、又没有 REA_VLM_* 时，默认是 Gemini 3.1 Pro Preview（可用 REA_GEMINI_MODEL 改），连声音一起看片段
 export GEMINI_API_KEY=...
 rea-video decompose ref.mp4 -o out/ref --vlm
 #    用其他多模态模型：export REA_VLM_BASE_URL=https://.../v1 REA_VLM_API_KEY=... REA_VLM_MODEL=gpt-4o
@@ -119,7 +119,8 @@ rea-video capsule-draft out/ref/breakdown.json --capsule-root $CC --capsule-name
 | `eval labels.yaml` | 在带标注的样本上评测准确率和切点 F1 |
 | `capsule breakdown.json` | 导出 capsule-cinema 的视频分析 JSON |
 | `models [ID]` | 列出能力地图里的生成模型；带 id 时打印这个模型的提示词写法和关键帧要求（`models keyframes` 是关键帧通用做法）；`~/.rea-video/capabilities/models/*.yaml` 里补充的模型也会列出 |
-| `plan OUT_DIR [--model ID] [--generate ai\|all]` | 按复刻意图 `remake/intent.yaml`（模型、整条重做还是只做 AI 镜头、换什么）出报告第二部分：生成单元、每次喂什么、提示词草稿和方案检查；`remake/prompts.json` 里按模型写好的最终提示词会做格式检查；拆解结果不变 |
+| `plan OUT_DIR [--model ID] [--generate ai\|all]` | 按复刻意图 `remake/intent.yaml`（模型、整条重做还是只做 AI 镜头、换什么）出报告第二部分：生成单元、每次喂什么、提示词草稿和方案检查；`remake/prompts.json` 里按模型写好的最终提示词会做格式检查；拆解结果不变。没指定模型、也没 `prefs engine` 时，同时设置了 `GEMINI_API_KEY` 和 `KIE_API_KEY` 就按 Seedance 2.5 规划，否则仍是 MiniMax H3 |
+| `generate OUT_DIR [--dry-run] [--yes] [--resolution 720p] [--image-resolution 1K] [--unit G1]` | 按方案生成 Seedance 2.5 视频和 GPT Image 2 静帧。有 `KIE_API_KEY` 走 Kie；没有 Kie、有 `ZURELAY_API_KEY` 才改走 Zurelay。`--dry-run` 只打印通道、时长和美元估算，不调用。真正扣费要加 `--yes`。超出 Kie 参考视频限制（480p/720p、单段 2–30 秒、合计 30 秒）的片段会先缩小。一次出多镜头的单元保存成一个文件，在 `remake/generate/` |
 | `remake-plan` | 把方案里的生成单元写成任务和交接文件 |
 | `remake` / `assemble` | 转交 capsule-cinema 拼回成片并验收 |
 | `remake-run JOBS [--dry-run] [--only G2\|2,5\|shot_002] [--capsule-root]` | 转交 capsule-cinema 执行复刻任务（会计费）；有任务没生成出视频时退出码非 0 |

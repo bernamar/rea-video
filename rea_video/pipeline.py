@@ -799,10 +799,10 @@ def finalize(breakdown: dict, out: Path, engine: str | None = None) -> dict:
         it = load_intent(out)
         if not it.get("model"):
             save_intent(out, {**it, "model": engine})
-    from .generation import DEFAULT_MODEL, load_intent
+    from .generation import default_video_model, load_intent
     from .memory import pref
 
-    engine = breakdown["engine"] = engine or load_intent(out).get("model") or pref("engine") or DEFAULT_MODEL
+    engine = breakdown["engine"] = engine or load_intent(out).get("model") or pref("engine") or default_video_model()
     shot_records = breakdown["shots"]
     audio = breakdown.get("audio", {})
     prov = breakdown.get("provenance", {})

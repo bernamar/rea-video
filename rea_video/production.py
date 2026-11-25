@@ -467,6 +467,9 @@ def production_plan(b: dict, out: Path, engine: str = "minimax-h3") -> dict:
     plan["footage"] = footage_runs(shots)
     plan["_labels"] = {r["index"]: r["base"]["label"] for r in shots}
     plan["summary"] = summary_line(plan, b)
+    from .generate import attach_cost
+
+    attach_cost(plan, str((b.get("source") or {}).get("aspect_ratio") or ""))
     del plan["_labels"]
     return plan
 
@@ -608,6 +611,12 @@ def report_md(plan: dict) -> list[str]:
     L = ["", T("## 复刻方案", "## Remake plan"), "", f"**{plan['summary']}**", ""]
     if plan.get("engine_note"):
         L += [f"- {plan['engine_note']}"]
+    cost = plan.get("cost") or {}
+    if cost.get("total"):
+        L.append(T("- 费用估算（{p}，{d} 标价，失败不扣费）：视频约 ${v:.2f}，图片约 ${i:.2f}，合计约 ${t:.2f}。`rea-video generate` 先加 --dry-run。",
+                   "- Cost estimate ({p}, prices as of {d}; failed tasks are free): video about ${v:.2f}, images about ${i:.2f}, about ${t:.2f} total. Run `rea-video generate` with --dry-run first.",
+                   p=plan.get("provider") or cost.get("provider") or "", d=cost.get("as_of") or "",
+                   v=cost.get("video") or 0, i=cost.get("image_usd") or 0, t=cost.get("total") or 0))
     if plan["units"]:
         from .generation import report_md as gen_report
 

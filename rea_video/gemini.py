@@ -1,6 +1,7 @@
 """Google Gemini as the image / video reader, through its own API (not an OpenAI-compatible gateway).
 
-Set GEMINI_API_KEY (or GOOGLE_API_KEY); the model is REA_GEMINI_MODEL. Gemini watches
+Set GEMINI_API_KEY (or GOOGLE_API_KEY). The model is REA_GEMINI_MODEL, or Gemini 3.1 Pro
+Preview when that is unset. Gemini watches
 video with its sound, so a clip goes in whole: inline when small, else through the Files API (deleted after the
 answer; an upload that can't be deleted expires on Google's side within 48 hours). Short clips are sampled densely
 (video_metadata.fps), long ones at Gemini's default. Used only when the user asks for a VLM (--vlm): the video leaves
@@ -21,7 +22,7 @@ from .media import duration_s
 from .util import LOG
 
 API = "https://generativelanguage.googleapis.com"
-DEFAULT_MODEL = "gemini-3.7-flash"
+DEFAULT_MODEL = "gemini-3.1-pro-preview"
 INLINE_MAX = 14 * 1024 * 1024  # base64 adds 33%: 14 MB raw -> ~18.7 MB body, under Gemini's 20 MB inline limit
 CLIP_FPS = ((30.0, 10.0), (120.0, 4.0))  # (clips up to s, frames a second); longer: Gemini's default (1)
 
@@ -36,6 +37,17 @@ def configured() -> bool:
 
 class GeminiError(RuntimeError):
     pass
+
+
+def _http_message(status: int, body: str) -> str:
+    from .errors import redact
+
+    text = redact(body)
+    if status in (401, 403) or "API_KEY_INVALID" in text or "api key" in text.lower():
+        return "Gemini refused the API key. Check GEMINI_API_KEY in your .env file."
+    if status == 429:
+        return "Gemini rate limit reached. Wait and run it again."
+    return f"Gemini HTTP {status}: {text[:300]}"
 
 
 class GeminiClient:
@@ -62,8 +74,8 @@ class GeminiClient:
             with urllib.request.urlopen(req, timeout=timeout) as r:
                 return dict(r.headers), r.read()
         except urllib.error.HTTPError as exc:
-            body = exc.read()[:300].decode("utf-8", "replace")
-            raise GeminiError(f"HTTP {exc.code}: {body}") from None
+            body = exc.read()[:500].decode("utf-8", "replace")
+            raise GeminiError(_http_message(exc.code, body)) from None
 
     def _upload(self, p: Path, mime: str, max_wait: float = 900.0) -> dict:
         size = p.stat().st_size

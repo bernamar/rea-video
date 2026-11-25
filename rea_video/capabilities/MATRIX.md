@@ -18,9 +18,9 @@
 | `analyze.pose_track` | 人体骨骼跟踪 | ◐ `dwpose` |
 | `analyze.body_mocap` | 单目视频动捕 | ◐ `rokoko-vision` |
 | `analyze.image_layer_decompose` | 单帧图层分解 | ◐ `seedream-5.0`、◐ `seedream-5.5` |
-| `image.t2i` | 文生图 | ◐ `flux-3`、◐ `flux-3-klein`、● `gpt-image-2.5`、◐ `gpt-image-2.6`、◐ `grok-imagine-image-2.0`、○ `ideogram-4.5`、◐ `kling-o3-image`、◐ `mai-image-2.6`、○ `midjourney-v8.2`、◐ `minimax-h3-image`、◐ `nano-banana-2-lite`、◐ `nano-banana-2.1`、◐ `qwen-image-2.1`、◐ `qwen-image-3.0`、◐ `qwen-image-3.0-pro`、◐ `seedream-5.0`、◐ `seedream-5.5` |
-| `image.edit_multi_ref` | 多参考图像编辑/合成 | ◐ `flux-3`、◐ `flux-3-klein`、● `gpt-image-2.5`、◐ `gpt-image-2.6`、◐ `grok-imagine-image-2.0`、○ `ideogram-4.5`、◐ `kling-o3-image`、◐ `mai-image-2.6`、○ `midjourney-v8.2`、◐ `minimax-h3-image`、◐ `nano-banana-2.1`、◐ `qwen-image-2.1`、◐ `qwen-image-3.0`、◐ `qwen-image-3.0-pro`、◐ `seedream-5.0`、◐ `seedream-5.5` |
-| `image.text_render` | 画内文字渲染 | ◐ `flux-3`、● `gpt-image-2.5`、◐ `gpt-image-2.6`、○ `ideogram-4.5`、◐ `mai-image-2.6`、◐ `minimax-h3-image`、◐ `nano-banana-2.1`、◐ `qwen-image-2.1`、◐ `qwen-image-3.0`、◐ `qwen-image-3.0-pro`、◐ `seedream-5.0`、◐ `seedream-5.5` |
+| `image.t2i` | 文生图 | ◐ `flux-3`、◐ `flux-3-klein`、● `gpt-image-2`、● `gpt-image-2.5`、◐ `gpt-image-2.6`、◐ `grok-imagine-image-2.0`、○ `ideogram-4.5`、◐ `kling-o3-image`、◐ `mai-image-2.6`、○ `midjourney-v8.2`、◐ `minimax-h3-image`、◐ `nano-banana-2-lite`、◐ `nano-banana-2.1`、◐ `qwen-image-2.1`、◐ `qwen-image-3.0`、◐ `qwen-image-3.0-pro`、◐ `seedream-5.0`、◐ `seedream-5.5` |
+| `image.edit_multi_ref` | 多参考图像编辑/合成 | ◐ `flux-3`、◐ `flux-3-klein`、● `gpt-image-2`、● `gpt-image-2.5`、◐ `gpt-image-2.6`、◐ `grok-imagine-image-2.0`、○ `ideogram-4.5`、◐ `kling-o3-image`、◐ `mai-image-2.6`、○ `midjourney-v8.2`、◐ `minimax-h3-image`、◐ `nano-banana-2.1`、◐ `qwen-image-2.1`、◐ `qwen-image-3.0`、◐ `qwen-image-3.0-pro`、◐ `seedream-5.0`、◐ `seedream-5.5` |
+| `image.text_render` | 画内文字渲染 | ◐ `flux-3`、● `gpt-image-2`、● `gpt-image-2.5`、◐ `gpt-image-2.6`、○ `ideogram-4.5`、◐ `mai-image-2.6`、◐ `minimax-h3-image`、◐ `nano-banana-2.1`、◐ `qwen-image-2.1`、◐ `qwen-image-3.0`、◐ `qwen-image-3.0-pro`、◐ `seedream-5.0`、◐ `seedream-5.5` |
 | `image.storyboard_series` | 分镜组图 | ◐ `kling-o3-image`、◐ `seedream-5.0` |
 | `image.tryon` | 虚拟试穿 | ◐ `fashn-tryon-max`、◐ `fashn-v1.6`、◐ `kling-kolors-tryon`、◐ `kling-virtual-tryon-3`、◐ `qwen-image-2.1` |
 | `video.t2v` | 文生视频 | ◐ `flux-3-video`、○ `flux-3-video-max`、◐ `gemini-omni-flash`、◐ `grok-imagine-video-1.5`、○ `grok-imagine-video-1.5-lite`、◐ `hailuo-2.3`、○ `happyhorse-1.0`、◐ `heygen-video-1`、◐ `hunyuanvideo-1.5`、◐ `kling-3.0`、◐ `kling-4.0`、◐ `kling-4.0-flash`、◐ `kling-o3`、◐ `ltx-2.5`、○ `luma-ray3.2`、● `minimax-h3`、◐ `minimax-h3-max`、○ `p-video-2-pro`、◐ `pika-h3-flex`、◐ `pixverse-v6`、◐ `runway-gen-4.5`、◐ `seedance-2.0`、● `seedance-2.5`、○ `seedance-2.5-flash`、○ `skyreels-v4`、○ `utopai-x`、◐ `veo-3.1`、◐ `vidu-q3`、● `wan-2.2`、◐ `wan-3.0` |
@@ -61,7 +61,7 @@
 | Doubao Seed 2.0 Pro（豆包） | ByteDance | analysis | ga |  |  | 是 | third-party 2026-10-29 |
 | DWPose | IDEA Research（开源） | analysis | ga |  |  | 是 | knowledge 2026-11-14 |
 | FunASR / SenseVoice | Alibaba（开源） | analysis | ga |  |  | 有条件 | knowledge 2026-10-29 |
-| Gemini 3.1 Pro | Google | analysis | ga | 10800 |  | 是 | third-party 2026-10-29 |
+| Gemini 3.1 Pro Preview | Google | analysis | preview | 10800 |  | 是 | vendor 2026-11-25 |
 | Gemini 3.5 Flash | Google | analysis | ga | 10800 |  | 是 | third-party 2026-10-29 |
 | librosa / madmom | 开源 | analysis | ga |  |  | 是 | knowledge 2026-10-29 |
 | MatAnyone 2 | 学术开源 | analysis | ga |  |  | 有条件 | third-party 2026-10-29 |
@@ -113,6 +113,7 @@
 | Wan-Animate-2 | Alibaba | character | ga |  |  | 是 | vendor 2026-11-12 |
 | FLUX 3 Image | Black Forest Labs | image | ga |  |  | 是 | vendor 2026-11-12 |
 | FLUX 3 Image Klein | Black Forest Labs | image | ga |  |  | 有条件 | vendor 2026-11-12 |
+| GPT Image 2 | OpenAI | image | ga |  |  | 是 | vendor 2026-11-25 |
 | GPT Image 2.5 | OpenAI | image | ga |  |  | 是 | user 2026-10-29 |
 | GPT Image 2.6（Sunburst / Flare） | OpenAI | image | ga |  |  | 是 | vendor 2026-11-12 |
 | Grok Imagine Image 2.0 | xAI | image | ga |  |  | 是 | vendor 2026-11-12 |
@@ -165,7 +166,7 @@
 | Runway Aleph 2 | Runway | video | ga |  |  | 是 | vendor 2026-11-12 |
 | Runway Gen-4.5（含 Act-Two） | Runway | video | ga | 10 | 否 | 是 | third-party 2026-10-29 |
 | Seedance 2.0（含 Mini / Fast） | ByteDance Seed | video | ga | 15 | 是 | 是 | third-party 2026-11-11 |
-| Seedance 2.5 | ByteDance Seed | video | ga | 30 | 是 | 是 | vendor 2026-11-11 |
+| Seedance 2.5 | ByteDance Seed | video | ga | 30 | 是 | 是 | vendor 2026-11-25 |
 | Seedance 2.5 Flash | ByteDance Seed | video | preview |  | 是 | 有条件 | third-party 2026-11-12 |
 | SkyReels V4 | Kunlun Skywork（昆仑万维） | video | ga |  |  | 有条件 | third-party 2026-11-12 |
 | Sora 2 / Sora 2 Pro | OpenAI | video | shutdown | 20 |  | 否 | third-party 2026-10-29 |

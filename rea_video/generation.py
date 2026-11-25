@@ -929,6 +929,9 @@ def plan_generation(b: dict, model: dict | None, intent: dict, new_scene: set[in
             units.append(build_unit(seg, len(units) + 1, strategy, spec, own, swaps, style, model,
                                     (notes or {}).get("draft"), b=b, lint_rules=(notes or {}).get("lint"), video_ref=eff_vref))
     img_tasks = build_image_tasks(b, units, intent)
+    from .providers import stamp_image_tasks
+
+    stamp_image_tasks(img_tasks, str((b.get("source") or {}).get("aspect_ratio") or ""))
     return {"strategy": strategy, "video_ref": eff_vref, "spec": spec, "labels": list(labels), "units": units, "own_refs": own,
             "image_tasks": img_tasks, "discontinuous_montage": discont,
             "rules": {"max_s": max_s, "max_shots": max_shots, "mode": mode, "generate": intent.get("generate", "ai"),
@@ -1158,7 +1161,17 @@ def checks(plan: dict, intent: dict, prompts: dict[str, str], notes: dict | None
     return out
 
 
-DEFAULT_MODEL = "minimax-h3"  # used until the user names a model or sets a usual one (prefs engine)
+DEFAULT_MODEL = "minimax-h3"  # used until the user names a model, sets prefs engine, or sets both Gemini and Kie keys
+
+
+def default_video_model() -> str:
+    """MiniMax H3, or Seedance 2.5 when GEMINI_API_KEY and KIE_API_KEY are both set.
+
+    Callers still prefer a model the user named and ``prefs engine`` over this.
+    """
+    from .providers import default_video_model as pick
+
+    return pick()
 
 
 REWRITE_TEMPLATE = """You are an expert video-generation prompt engineer.
@@ -1302,6 +1315,10 @@ def image_tasks_md(tasks: list[dict], strategy: str) -> list[str]:
             if strategy == "frames" else
             T("如果不直接喂原片画面、而是要做全新角色/换主体或改走逐镜图生视频，按下表准备每镜首帧图（已区分文生图与图生图，并给出反推生图提示词与参考图）：",
               "When generating fresh visuals, swapping subjects, or running shot-by-shot I2V instead of feeding raw source frames, prepare each shot's frame as below (T2I vs I2I, reverse-engineered image prompts and reference files):"))
+    named = {t.get("model") for t in tasks if t.get("model")}
+    if len(named) == 1:
+        provider = next((t.get("provider") for t in tasks if t.get("provider")), "")
+        note += T(" 关键帧和静帧用 {m}（{p}）。", " Keyframes and stills use {m} ({p}).", m=next(iter(named)), p=provider)
     L = ["", "<details><summary>" + T("前置图片准备与反推提示词（文生图 / 图生图，共 {n} 张）",
                                       "Upstream image preparation and reverse-engineered prompts (T2I / I2I, {n} images)", n=len(tasks)) + "</summary>", "",
          note, "",

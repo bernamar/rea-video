@@ -67,6 +67,7 @@ You can also hook up a video-capable model (Gemini or Doubao both work) by givin
 
 ## Updates
 
+- **2026-11-25**: When `GEMINI_API_KEY` and `KIE_API_KEY` are both set, analysis defaults to Gemini 3.1 Pro Preview and remake plans default to Seedance 2.5 plus GPT Image 2 on Kie. Otherwise the plan stays on MiniMax H3.
 - **2026-11-21**: Clearer report layout. Remake plans default to the official MiniMax H3 and follow the model you name.
 - **2026-11-19**: Magic videos: finds the reveal of each trick, frame by frame with a slow-motion clip. Highlights (twists, climaxes, goofs) when you ask for them.
 - **2026-11-17**: Better timing of cuts and moves.
@@ -142,7 +143,7 @@ All real footage: an overhead phone rig, one rug, one camera position, no voice-
 
 After rea-video breaks a video down, the remake recipe in [capsule-cinema](https://github.com/JuneYaooo/capsule-cinema) generates a new version that keeps the original's camera, motion, pacing and transitions and swaps only the elements you pick.
 These were made with a self-hosted MiniMax H3, using the original shot as the motion reference and keyframes with the swapped elements (gpt-image-2) for the look.
-Remake plans use the official MiniMax H3 specs by default. Name another model, or set the one you usually use, and the plan follows that model instead.
+Remake plans use the official MiniMax H3 specs by default. If both `GEMINI_API_KEY` and `KIE_API_KEY` are set, and you have not named a model or saved one with `rea-video prefs engine`, the plan uses Seedance 2.5 for video and GPT Image 2 for keyframes and stills, both through Kie. Name another model, or set the one you usually use, and the plan follows that model instead.
 Below are three remakes OiiOii showed in its WeChat articles. We made two versions of each: one with the same swap as OiiOii, and one that also swaps the subject, setting and props.
 Each GIF plays four versions in sync: the original, OiiOii's remake, our remake and the element-swap version.
 
@@ -231,7 +232,7 @@ rea-video doesn't render a video. It works out shot by shot whether something wa
 <details>
 <summary>Do I need a video-capable model? What does it cost?</summary>
 
-No. Tools-only mode is offline and free, and already accurate on original files. For recompressed platform downloads, add a video-capable model (Gemini or Doubao both work) or use an agent that can see images; you pay whatever that service charges. Automatic video generation (capsule-cinema) does a free dry run first and only calls paid models after you confirm.
+No. Tools-only mode is offline and free, and already accurate on original files. For recompressed platform downloads, add a video-capable model (Gemini or Doubao both work) or use an agent that can see images; you pay whatever that service charges. With `GEMINI_API_KEY` set and no other vision endpoint, analysis uses Gemini 3.1 Pro Preview (a 30-second watch is roughly $0.07). Automatic video generation does a dry run first: `rea-video generate --dry-run` prices Seedance 2.5 and GPT Image 2 on Kie, and Capsule Cinema's dry run covers the other models. Nothing is billed until you confirm.
 
 </details>
 

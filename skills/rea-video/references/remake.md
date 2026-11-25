@@ -1,6 +1,6 @@
 # 复刻
 
-复刻可以用的工具和方式列在 `remake-tools.md`，每种的用法、费用和怎么帮用户接上各有一个文档：`chatcut.md`、`capsule-cinema.md`、`diy.md`。
+复刻可以用的工具和方式列在 `remake-tools.md`，每种的用法、费用和怎么帮用户接上各有一个文档：`chatcut.md`、`capsule-cinema.md`、`kie.md`、`diy.md`。
 
 ## 照着做
 
@@ -12,7 +12,7 @@
 
 ## 用哪个模型
 
-- 模型、整条重做还是只做 AI 镜头、换什么，都写在 `remake/intent.yaml`（见 SKILL.md「复刻」），`rea-video plan out/ref` 按它出方案。用户没说用哪个模型时，先按默认模型（MiniMax H3，或 `prefs engine` 记住的模型）出方案并在回复里说明，不要先停下来追问；用户想换模型再跑 `rea-video plan out/ref --model <id>`。
+- 模型、整条重做还是只做 AI 镜头、换什么，都写在 `remake/intent.yaml`（见 SKILL.md「复刻」），`rea-video plan out/ref` 按它出方案。用户没说用哪个模型时，先按默认模型出方案并在回复里说明，不要先停下来追问：两个密钥都在（`GEMINI_API_KEY` 和 `KIE_API_KEY`）就是 Seedance 2.5，静帧是 Kie 上的 GPT Image 2；否则是 MiniMax H3，或 `prefs engine` 记住的模型。用户想换模型再跑 `rea-video plan out/ref --model <id>`。Seedance 方案可以用 `rea-video generate out/ref --dry-run` 看费用，确认后加 `--yes` 在 Kie 上生成（没有 Kie 密钥、有 `ZURELAY_API_KEY` 时才改走 Zurelay）。
 - 报告里每个单元的提示词是草稿，已按该模型的镜头写法、语言、素材编号、台词音效格式排好（首帧 / 首尾帧模式下自动去掉重复的静态环境/光线描述，只留运动和运镜）。按 `rea-video models <id>` 打印的写法核对，写成最终版放进 `remake/prompts.json`（或运行 `rea-video plan out/ref --rewrite-prompts` 用配置的大模型自动重写并过校验）。`rea-video plan` 会按这个模型的格式规则检查。
 - 选帧、擦字、首尾帧怎么配：`rea-video models keyframes`。
 

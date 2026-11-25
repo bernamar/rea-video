@@ -37,7 +37,7 @@ Reports are in Chinese by default. Add `--lang en` to `decompose`, or run `rea-v
 rea-video decompose ref.mp4 -o out/ref
 
 # 2. Add a VLM (recommended, not required): a multimodal model looks at the frames, which improves live action / AI / 3D calls
-#    Use Gemini directly (set the model with REA_GEMINI_MODEL); it watches clips with sound
+#    Use Gemini directly. With GEMINI_API_KEY set, the model is Gemini 3.1 Pro Preview unless REA_GEMINI_MODEL says otherwise. It watches clips with sound.
 export GEMINI_API_KEY=...
 rea-video decompose ref.mp4 -o out/ref --vlm
 #    For another multimodal model: export REA_VLM_BASE_URL=https://.../v1 REA_VLM_API_KEY=... REA_VLM_MODEL=gpt-4o
@@ -121,7 +121,8 @@ See [capsule-cinema.md](capsule-cinema.md).
 | `eval labels.yaml` | Measures accuracy and cut F1 on labeled samples |
 | `capsule breakdown.json` | Exports capsule-cinema's video analysis JSON |
 | `models [ID]` | Lists generation models in the capability map. With an id, prints that model's prompt format and key-frame requirements (`models keyframes` prints the general key-frame guide). Models added in `~/.rea-video/capabilities/models/*.yaml` are listed too |
-| `plan OUT_DIR [--model ID] [--generate ai\|all]` | Builds part two of the report from the remake intent `remake/intent.yaml` (model, whole video or AI shots only, what to swap): generation units, inputs per call, draft prompts and plan checks. Final per-model prompts in `remake/prompts.json` are format-checked. The breakdown itself doesn't change |
+| `plan OUT_DIR [--model ID] [--generate ai\|all]` | Builds part two of the report from the remake intent `remake/intent.yaml` (model, whole video or AI shots only, what to swap): generation units, inputs per call, draft prompts and plan checks. Final per-model prompts in `remake/prompts.json` are format-checked. The breakdown itself doesn't change. With no model and no `prefs engine`, both `GEMINI_API_KEY` and `KIE_API_KEY` select Seedance 2.5; otherwise MiniMax H3 |
+| `generate OUT_DIR [--dry-run] [--yes] [--resolution 720p] [--image-resolution 1K] [--unit G1]` | Generates the plan's Seedance 2.5 shots and GPT Image 2 stills. Kie when `KIE_API_KEY` is set; Zurelay (`ZURELAY_API_KEY`) only if Kie is not. `--dry-run` prints the provider, lengths and a dollar estimate and does not call the API. `--yes` is required before anything is billed. Reference clips outside Kie's 480p/720p box are scaled. A multi-shot unit is saved as one file under `remake/generate/` |
 | `remake-plan` | Writes the plan's generation units as jobs and handoff files |
 | `remake` / `assemble` | Hand off to capsule-cinema to assemble the remake and check it |
 | `remake-run JOBS [--dry-run] [--only G2\|2,5\|shot_002] [--capsule-root]` | Hands remake jobs to capsule-cinema (billed). Exits non-zero if any job produced no video |

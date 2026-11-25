@@ -810,10 +810,10 @@ def cmd_plan(args) -> int:
         else:
             intent["max_ref_video_s"] = float(args.max_ref_video_s)
     if not intent.get("model"):
-        from .generation import DEFAULT_MODEL
+        from .generation import default_video_model
         from .memory import pref
 
-        intent["model"] = pref("engine") or DEFAULT_MODEL
+        intent["model"] = pref("engine") or default_video_model()
     pl = Planner()
     live = {k: x for k, x in pl.models.items() if x.get("status") not in ("shutdown", "deprecated")}
     m = next((x for x in live.values() if _norm(x["id"]) == _norm(intent["model"]) or _norm(x.get("name", "")) == _norm(intent["model"])), None)
@@ -860,7 +860,65 @@ def cmd_plan(args) -> int:
     if cs:
         print(T("方案检查：", "Plan checks:"))
         print("\n".join(check_lines(cs)))
+    cost = plan.get("cost") or {}
+    if cost.get("total"):
+        print(T("费用估算（{p}，{d} 标价，失败不扣费）：约 ${t:.2f}（视频 ${v:.2f} + 图片 ${i:.2f}）。生成前先跑 rea-video generate {o} --dry-run",
+                "Cost estimate ({p}, prices as of {d}; failed tasks are free): about ${t:.2f} (video ${v:.2f} + images ${i:.2f}). Dry-run first: rea-video generate {o} --dry-run",
+                p=plan.get("provider") or "", d=cost.get("as_of") or "", t=cost.get("total") or 0,
+                v=cost.get("video") or 0, i=cost.get("image_usd") or 0, o=out))
     return 1 if any(c["level"] == "error" for c in cs) else 0
+
+
+def cmd_generate(args) -> int:
+    """Generate the Seedance 2.5 units in a remake plan. Kie when KIE_API_KEY is set, else Zurelay."""
+    from .errors import ProviderError
+    from .generate import client_for, describe, execute
+    from .util import read_json
+
+    out = Path(args.out_dir)
+    breakdown_path = out / "breakdown.json"
+    if not breakdown_path.is_file():
+        print(U("rea-video: 找不到 {p}。先 decompose，再 plan。", "rea-video: {p} not found. Run decompose, then plan.", p=breakdown_path), file=sys.stderr)
+        return 2
+    breakdown = read_json(breakdown_path)
+    plan = breakdown.get("production_plan") or {}
+    aspect = str((breakdown.get("source") or {}).get("aspect_ratio") or "")
+    try:
+        preview = describe(plan, resolution=args.resolution, image_resolution=args.image_resolution,
+                           aspect_ratio=aspect, only=args.unit)
+    except ProviderError as exc:
+        print(f"rea-video: {exc}", file=sys.stderr)
+        return 2
+    cost = preview["cost"]
+    print(U("生成通道：{p}，视频 {v}，静帧 {i}", "Provider: {p}, video {v}, stills {i}",
+            p=preview["provider"], v=preview["video_api_model"], i=preview["image_model"]))
+    print(U("费用估算（{d} 标价，失败不扣费）：视频 ${vid:.2f} + 图片 ${img:.2f} = ${t:.2f}",
+            "Estimate (prices as of {d}; failed tasks are free): video ${vid:.2f} + images ${img:.2f} = ${t:.2f}",
+            d=cost["as_of"], vid=cost["video"], img=cost["image_usd"], t=cost["total"]))
+    for note in preview["notes"]:
+        print(f"- {note}")
+    for unit in preview["units"]:
+        print(U("{i} {s}：生成 {n}s，参考视频 {r:.1f}s，参考图 {img} 张",
+                "{i} {s}: generate {n}s, reference video {r:.1f}s, {img} reference image(s)",
+                i=unit["id"], s=unit["strategy"], n=unit["seconds"], r=unit["reference_seconds"], img=unit["images"]))
+    if args.dry_run or not args.yes:
+        if not args.dry_run:
+            print(U("这是付费调用。确认后加 --yes。", "This spends money. Re-run with --yes to generate."))
+        return 0
+    try:
+        client = client_for(preview["provider"])
+        written = execute(plan, out, preview, client=client, breakdown=breakdown,
+                          images=not args.skip_images, videos=not args.skip_videos)
+    except ProviderError as exc:
+        print(f"rea-video: {exc}", file=sys.stderr)
+        return 2
+    n_img, n_vid = len(written.get("images") or {}), len(written.get("videos") or {})
+    print(U("已写入 {i} 张静帧、{v} 段视频：{d}", "Wrote {i} still(s) and {v} clip(s): {d}",
+            i=n_img, v=n_vid, d=out / "remake" / "generate"))
+    if n_vid:
+        print(U("多镜头的单元是一整段文件，没有按镜头切开。单镜头的成片路径在 remake/generate/results.json。",
+                "A multi-shot unit is one file, not cut back into shots. Paths are in remake/generate/results.json."))
+    return 0
 
 
 def cmd_models(args) -> int:
@@ -984,7 +1042,7 @@ def main(argv: list[str] | None = None) -> int:
     d.add_argument("--lang", choices=LANGS, help="报告、结论和 VLM 描述的语言：zh（默认）/ en；按用户提问的语言选，也可用 prefs lang 设成默认")
     d.add_argument("--workers", type=int, default=3)
     d.add_argument("--max-vlm-shots", type=int, default=60, help="最多发给 VLM 的调用数（默认 60；镜头更多时优先看最拿不准的，其余只靠确定性取证）")
-    d.add_argument("--engine", help="复刻方案按哪个视频模型规划（rea-video models 列出的 id；默认 prefs 里的 engine，否则 minimax-h3）")
+    d.add_argument("--engine", help="复刻方案按哪个视频模型规划（rea-video models 列出的 id；默认 prefs 里的 engine，否则同时有 GEMINI_API_KEY 和 KIE_API_KEY 时用 seedance-2.5，不然用 minimax-h3）")
     d.add_argument("--meta", help='平台元数据 JSON，例如 {"music": {"title": "xx", "author": "yy", "is_original": false, "popular": true}}')
     d.add_argument("--no-asr", action="store_true", help="不做本地语音识别（装了 rea-video[asr] 才会做：在人声干声上识别台词和时间，首次使用下载约 160 MB 模型）")
     d.add_argument("--asr-lang", choices=ASR_LANGS, help="台词的语言：auto（默认，SenseVoice 自动识别中/英/日/韩/粤）、bn 孟加拉语（换用孟加拉语识别模型，首次使用自动下载约 90 MB）；也可用 prefs asr_lang 设成默认")
@@ -1178,6 +1236,17 @@ def main(argv: list[str] | None = None) -> int:
     pl_.add_argument("--rewrite-prompts", action="store_true", help="用已配置的大模型（GEMINI_API_KEY 或 REA_VLM_*）按所选模型的提示词指南自动重写每段提示词，校验后写入 remake/prompts.json")
     pl_.set_defaults(func=cmd_plan)
 
+    ge = sub.add_parser("generate", help="按复刻方案在 Kie 上生成 Seedance 2.5 视频和 GPT Image 2 静帧（没有 Kie 时改走 Zurelay）；先 --dry-run")
+    ge.add_argument("out_dir", help="拆解目录")
+    ge.add_argument("--dry-run", action="store_true", help="只打印通道、每段时长和费用估算，不调用、不扣费")
+    ge.add_argument("--yes", action="store_true", help="确认付费并开始生成；不加则只显示估算")
+    ge.add_argument("--resolution", default="720p", help="视频分辨率：480p、720p、1080p、4k（默认 720p）")
+    ge.add_argument("--image-resolution", default="1K", help="静帧分辨率：1K、2K、4K（默认 1K）")
+    ge.add_argument("--unit", help="只生成这一个单元，例如 G1")
+    ge.add_argument("--skip-images", action="store_true", help="不生成静帧")
+    ge.add_argument("--skip-videos", action="store_true", help="不生成视频")
+    ge.set_defaults(func=cmd_generate)
+
     mo = sub.add_parser("models", help="列出能力地图里的生成模型；带模型 id 时打印这个模型的提示词写法和关键帧要求")
     mo.add_argument("model", nargs="?", help="模型 id（如 seedance-2.5、kling-3.0）；keyframes 打印关键帧通用做法")
     mo.set_defaults(func=cmd_models)
@@ -1207,10 +1276,16 @@ def main(argv: list[str] | None = None) -> int:
         args.lang = args.root_lang  # `rea-video --lang en decompose ...`: the subcommand's own default would drop it
     setup_logging(args.verbose)
     _env(args)
+    from .errors import ProviderError
     from .media import MediaError
 
     try:
         return args.func(args)
+    except ProviderError as exc:
+        print(f"rea-video: {exc}", file=sys.stderr)
+        if args.verbose:
+            raise
+        return 2
     except MediaError as exc:  # missing ffmpeg / unreadable video: one line, not a traceback
         hint = ""
         if "not found on PATH" in str(exc):

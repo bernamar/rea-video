@@ -107,7 +107,7 @@ rea-video summary out/ref/breakdown.json      # 用并入后的结果写回复
 报告分两部分：第一部分是拆解（结构，和用什么模型无关），第二部分是复刻方案（按一个模型排）。拆解不要因为复刻去合并镜头。
 
 有 AI 镜头时，复刻方案按用户的意图和实际用的模型来排：
-1. 定模型：用户这次提到的模型优先，其次是常用模型（`rea-video prefs engine <id>`），都没有就默认 MiniMax H3，不用为此停下来问。再确认整条都用模型重做，还是只生成原片里 AI 做的镜头；要换什么、换成什么、有没有参考图。写进 `out/ref/remake/intent.yaml`：
+1. 定模型：用户这次提到的模型优先，其次是常用模型（`rea-video prefs engine <id>`）。都没有时，`GEMINI_API_KEY` 和 `KIE_API_KEY` 都设置了就用 Seedance 2.5（静帧 GPT Image 2，走 Kie），否则默认 MiniMax H3，不用为此停下来问。再确认整条都用模型重做，还是只生成原片里 AI 做的镜头；要换什么、换成什么、有没有参考图。写进 `out/ref/remake/intent.yaml`：
 
    ```yaml
    model: seedance-2.5
